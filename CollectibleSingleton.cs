@@ -39,15 +39,4 @@ public class CollectibleSingleton : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
-    /*
-     quieres ocultarlo por boton o por tiempo?
-        por boton
-    no hay cursor
-     */
-    public void CloseMenu() {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        collectibleCanvas.gameObject.SetActive(false);
-    }
-
 }
