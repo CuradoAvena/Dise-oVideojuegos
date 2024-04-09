@@ -1,0 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Lantern : MonoBehaviour
+{
+    public GameObject lantern, onLantern, offLantern;
+   
+
+    void Start()
+    {
+        lantern.SetActive(false);
+        onLantern.SetActive(false);
+        offLantern.SetActive(true); 
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            //Activar o desactivar
+            if (lantern.activeSelf)
+            {
+                lantern.SetActive(false);
+                onLantern.SetActive(false);
+                offLantern.SetActive(true);
+            }
+            else
+            {
+                lantern.SetActive(true);
+                onLantern.SetActive(true);
+                offLantern.SetActive(false);
+            }
+        }
+    }
+}
+
