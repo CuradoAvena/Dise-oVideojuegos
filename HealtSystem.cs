@@ -4,53 +4,39 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class HealtSystem : MonoBehaviour, IDamageable
+public class HealthSystem : MonoBehaviour
 {
     #region UNITY METHODS
-       private void Start()
-       {
-        //EditHealth(MaxHealth);
-          LoadHealth();
-       }
+    private void Awake()
+    {
+        EditHealth(MaxHealth);
+    }
+
     #endregion
 
-    #region VARIABLES
-    public int Health{ private set; get; } =10;
 
-    [SerializeField] private int MaxHealth = 100;
+    #region VARIABLES
+    public int Health { get; private set; } = 10;
+    [SerializeField]    private int MaxHealth=100;
 
     public UnityEvent OnDie, OnHealthChange;
     #endregion
 
     #region PUBLIC METHODS
-    public void TakeDamage(int damage)
-    {
-        EditHealth(-damage);
-    }
-    public void LoadHealth()
-    {
-
-        Health = 0;
-        var savedFile = PlayerSave.Instance.GetObject<HealthSave>("health.json");
-        EditHealth(savedFile.health);
-
-        OnHealthChange?.Invoke();
-    }
     public void EditHealth(int amount)
-    {
-        Health = Mathf.Clamp(Health + amount, 0, MaxHealth);
+    { 
+      Health = Mathf.Clamp(Health+amount,0,MaxHealth);
         OnHealthChange?.Invoke();
-        if (Health <= 0) Die();
+        if (Health <= 0)   Die();
     }
 
-    public void Restart()
-    {
+    public void Restart() {
+
         EditHealth(MaxHealth);
+    
     }
     #endregion
 
-    private void Die()
-    {
-        OnDie?.Invoke();
-    }
+    private void Die() { OnDie?.Invoke(); }
+
 }
