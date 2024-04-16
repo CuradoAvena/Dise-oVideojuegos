@@ -22,66 +22,29 @@ public class CollectibleManager : MonoBehaviour
 
     private void Start()
     {
-        // Obtén todos los puntos de aparición de objetos coleccionables
-        foreach (Transform child in transform)
-        {
-            collectibleSpawnPoints.Add(child);
+        registry = new Dictionary<CollectibleType, CollectibleRegistry>();
+        foreach (var data in collectibles_data) {
+            data.Initialize();
+            registry.Add(data.type, data);
         }
 
-        registry = new Dictionary<CollectibleType, CollectibleRegistry>();
-        foreach (var data in collectibles_data)
-            registry.Add(data.type, data);
+        SpawnCollectible(CollectibleType.Lata, 1);
+        collectibleCounterText.text = "";
 
-        SpawnCollectible(CollectibleType.Moneda, 1);
-        UpdateCollectibleCounterText();
     }
 
     public static CollectibleManager Instance { get; private set; }
-    public GameObject collectiblePrefab;
     public Text collectibleCounterText;
 
-    public List<Transform> collectibleSpawnPoints = new List<Transform>();
-    public CollectibleRegistry []collectibles_data;
+    public CollectibleRegistry[] collectibles_data;
     private Dictionary<CollectibleType, CollectibleRegistry> registry;
 
-    [Serializable]
-    public class CollectibleRegistry {
-        public CollectibleType type;
-        public int amount = 0;
-        public int MaxAmount = 10;
-        public CollectibleData data;
-
-        public bool isCapped() { return amount >= MaxAmount; }
-        public void Clear() { amount = 0; }
-        public void Add(int val = 1) { amount =Mathf.Clamp(amount+val, 0, MaxAmount); }
-    }
-  
-
-    private void SpawnCollectible(CollectibleType type,int count)
+ 
+    private void SpawnCollectible(CollectibleType type, int count)
     {
-
-        for (int i = 0; i < count; i++)
-        {
-            if (collectibleSpawnPoints.Count == 0)
-            {
-                break; // Detiene la generación si no quedan puntos de aparición
-            }
-
-            // Elige un punto de aparición aleatorio
-            Transform spawnPoint = GetRandomSpawnPoint();
-
-            GameObject collectible = Instantiate(collectiblePrefab, spawnPoint.position, Quaternion.identity);
-            collectible.GetComponent<Collectible>().collectibleType = type;
-        }
+        registry[type].Spawn(count);
     }
 
-    private Transform GetRandomSpawnPoint()
-    {
-        int randomIndex = UnityEngine.Random.Range(0, collectibleSpawnPoints.Count);
-        Transform spawnPoint = collectibleSpawnPoints[randomIndex];
-        collectibleSpawnPoints.RemoveAt(randomIndex);
-        return spawnPoint;
-    }
 
     public void Collect(Collectible collectible)
     {
@@ -96,23 +59,26 @@ public class CollectibleManager : MonoBehaviour
                 //genera otro
                 SpawnCollectible(type, 1);
             }
-            //el coleccionable solo conoce su tipo, pero el que almacena la info para su presentacion en interfaz es el REGISTRO que se tiene guardado solo 1 vez
-            CollectibleSingleton.Instance.Open(registry[type].data);
-            Debug.Log(collectible.gameObject.name); 
-            Debug.Log(collectible.transform.gameObject.name);
+
+            /*el coleccionable solo conoce su tipo, pero el que almacena la info
+            //para su presentacion en interfaz es el REGISTRO que se tiene guardado solo 1 vez*/
+            CollectibleInterface.Instance.Open(registry[type].data);
+
             //destruimos el actual
             //no recomiendo destruir, mejor usar un pool object
             Destroy(collectible.transform.gameObject);
             //collectible.gameObject.SetActive(false);
-            UpdateCollectibleCounterText();
+            UpdateCollectibleCounterText(type);
         }
     }
 
-    private bool isCollectibleRegistered(CollectibleType type) {
+    private bool isCollectibleRegistered(CollectibleType type)
+    {
         return registry.ContainsKey(type);
     }
-    private void UpdateCollectibleCounterText()
+    private void UpdateCollectibleCounterText(CollectibleType type)
     {
-        collectibleCounterText.text = "Monedas: " + registry[CollectibleType.Moneda].amount + "/" + registry[CollectibleType.Moneda].MaxAmount;
+        //collectibleCounterText.text = "Moneda: " + registry[type].amount + "/" + registry[type].MaxAmount;
+        collectibleCounterText.text = $"{type}: {registry[type].amount} / {registry[type].MaxAmount}";
     }
 }
