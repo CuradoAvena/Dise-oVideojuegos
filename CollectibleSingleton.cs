@@ -5,38 +5,50 @@ using UnityEngine.UI;
 
 public class CollectibleInterface : MonoBehaviour
 {
-    public static CollectibleInterface Instance; //Cambien todos los collectibleSingleton por CollectibleInterface en todos los codigos donde lo ocupemos
+    public static CollectibleInterface Instance;
     public Text text_Name;
     public Text text_Description;
-    public Image Image_Collect;
-  
-    public Canvas collectibleCanvas;
+    public Image Image_collect;
 
-    private CollectibleData currentData;
+   public Canvas collectibleCanvas;
+
+
+    private CollectibleData currenteData;
 
     private void Awake()
     {
-        if (Instance == null)
+     if (Instance == null)
         {
             Instance = this;
         }
-        else
+     else
         {
             Destroy(gameObject);
         }
+   
     }
+    private void Start()
+    {
+        CloseMenu();
+    }
+
     public void Open(CollectibleData data)
     {
-            text_Name.text = data.itemName;
+        text_Name.text = data.itemName;
         text_Description.text = data.itemDescription;
-        Image_Collect.sprite = data.itemSprite;
+        Image_collect.sprite = data.itemSprite;
 
         if (collectibleCanvas != null)
         {
             collectibleCanvas.gameObject.SetActive(true);
         }
-        currentData = data;
+        currenteData = data;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+    }
+    public void CloseMenu()  {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        collectibleCanvas.gameObject.SetActive(false);
     }
 }
