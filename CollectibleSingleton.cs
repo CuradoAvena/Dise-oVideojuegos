@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CollectibleSingleton : MonoBehaviour
+public class CollectibleInterface : MonoBehaviour
 {
-    public static CollectibleSingleton Instance;
+    public static CollectibleInterface Instance; //Cambien todos los collectibleSingleton por CollectibleInterface en todos los codigos donde lo ocupemos
     public Text text_Name;
     public Text text_Description;
     public Image Image_Collect;
